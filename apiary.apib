@@ -138,6 +138,8 @@ After successful registration a confirmation email MUST be sent to provided addr
     + Attributes
         + email: `john.doe@mail.com` (string, required) - E-mail address.
         + password: `QXR0mi38a2` (string, required) - User password.
+        + firstname: `Dance` (string) - User password.
+        + lastname: `Coach` (string) - User password.
 
 + Response 201
 
@@ -153,7 +155,7 @@ Allows to retrieve a valid JSON Web Token for username and password.
 
 + Request (application/json)
     + Attributes
-        + token: `john.doe@mail.com` (string, required) - User email address
+        + token: `facebook-token-is-cool` (string, required) - User email address
         + expiresAt: `2016-07-01T15:11:09.553Z` (string, required) - ISO Date/time string. When this resource will expire.
 
 + Response 200 (application/json)
