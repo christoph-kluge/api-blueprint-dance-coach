@@ -1,80 +1,239 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://api.not-yet-known.com
 
 # Dance Coach
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+*This API blueprint is subject to change due to technology restrictions, performance optimizations or changing requirements.*
 
-## Questions Collection [/questions]
+## Authentication
 
-### List All Questions [GET]
++ This API uses [JWT](http://jwt.io/) for authentication,
++ Every token MUST be refreshed before its expiration time,
++ Token MUST be provided in `Authorization` header,
++ Toke MUST be provided for each request that requires authentication,
 
-+ Response 200 (application/json)
+> A custom scheme like "JWT" seems to be more appropriate than coercing the OAuth2 Bearer scheme.
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
+### Example Header
+```
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNnZoQW8zRkc3dDEiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE0NzA1OTg5NzIsImV4cCI6MTQ3MDY4NTM3Mn0.ltA9zZmJKszBJuuV7pTWtY7LzLXrRUfebJDhy_jGMeM
+```
 
-### Create a New Question [POST]
+### Claims
++ `exp` - The exp ( *expiration time* ) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing.
++ `iat` - The iat ( *issued at* ) claim identifies the time at which the JWT was issued.
++ `sub` - The aud ( *audience* ) claim identifies the subject of this token (for e.g. a user id).
++ `iss` - The iss ( *issuer* ) claim identifies the principal that issued the JWT.
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+
+## HTTP Methods
+
+This API uses HTTP verbs (methods) as following:
+
++ `GET` - *Read* - used to **read** (or retrieve) a representation of a resource,
++ `POST` - *Create* - used to **create** new resources. In particular, it's used to create subordinate resources.
++ `PUT` - *Update/Replace* - used for **update** capabilities, PUT-ing to a known resource URI with the request body containing the newly-updated representation of the original resource. On successful request, replaces identified resource with the request body.
++ `PATCH` - *Update/Modify* - used for **modify** capabilities. The PATCH request only needs to contain the changes to the resource, not the complete resource.
++ `DELETE` - *Delete* - used to **delete** a resource identified by a URI.
+
+## Localization
+
+This API uses `Accept-Language` header to identify the locale.
+
+`Accept-Language: en`
+
+This header SHOULD be present in every request. If not, API MUST use the **english** language/locale.
+
+## Media Type
+
+Where applicable this API MUST use the JSON media-type. Requests with a message-body are using plain JSON to set or update resource states.
+
+`Content-type: application/json` and `Accept: application/json` headers SHOULD be set on all requests if not stated otherwise.
+
+## Notational Conventions
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC2119](https://www.ietf.org/rfc/rfc2119).
+
+## Representation of Date and Time
+
+All exchange of date and time-related data MUST be done according to ISO 8601 standard and stored in UTC.
+
+When returning date and time-related data `YYYY-MM-DDThh:mm:ss.SSSZ` format MUST be used. 
+
+### Example
+`2017-09-17T11:16:50.000+00:00`
+
+## Resource IDs
+
+This API uses non-sequential url-friendly unique ids. Every public resource id MUST be in formatted as UUID.
+
+### Example
+`2adf6271-fd23-413a-9933-5c63dcf5abb8`
+
+## Status Codes and Errors
+
+This API uses HTTP status codes to communicate with the API consumer.
+
++ `200 OK` - Response to a successful GET, PUT, PATCH or DELETE.
++ `201 Created` - Response to a POST that results in a creation.
++ `202 Accepted` - Response to a POST that processes the payload in an async way.
++ `204 No Content` - Response to a successful request that won't be returning a body (like a DELETE request).
++ `400 Bad Request` - Malformed request; form validation errors.
++ `401 Unauthorized` - When no or invalid authentication details are provided.
++ `403 Forbidden` - When authentication succeeded but authenticated user doesn't have access to the resource.
++ `404 Not Found` - When a non-existent resource is requested.
++ `405 Method Not Allowed` - Method not allowed.
++ `406 Not Acceptable` - Could not satisfy the request Accept header.
++ `409 Conflict` - Could persist a resource as we see a double commit.
++ `415 Unsupported Media Type` - Unsupported media type in request.
+
+### Error response
+
+This API returns both, machine-readable error codes and human-readable error messages in response body when an error is encountered.
+
+#### Example
+
+##### Validation Error
+
+TBD
+
+##### Generic Error
+
+TBD
+
+# Group Authentication
+
+## User login [/auth/login]
+
+Access tokens are required to access nearly all endpoints of this API.
+
+### Retrieve a token [POST]
+
+|                         |     |
+|-------------------------|-----|
+| Requires authentication | No  |
+
+Allows to retrieve a valid JSON Web Token for username and password.
 
 + Request (application/json)
+    + Attributes
+        + login: `john.doe@mail.com` (string, required) - User email address
+        + password: `QXR0mi38a2` (string, required) - User password
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
++ Response 200 (application/json)
+    + Attributes
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....` (string) - JSON Web Token.
+    
+## User login [/auth/login]
 
-+ Response 201 (application/json)
+Access tokens are required to access nearly all endpoints of this API.
 
+## Refresh a token [POST /auth/refresh-token]
+
+|                         |     |
+|-------------------------|-----|
+| Requires authentication | Yes |
+
+Allows to retrieve a new, valid JSON Web Token based on a valid JSON Web Token.
+
+Expired tokens MUST NOT be refreshed.
+
++ Request
     + Headers
 
-            Location: /questions/2
+            Authorization: JWT <token>
 
-    + Body
++ Response 200 (application/json)
+    + Attributes
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....` (string) - New JWT
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
+## User registration [/auth/register]
+
+### Register a new user [POST]
+
+|                         |     |
+|-------------------------|-----|
+| Requires authentication | No  |
+
+After successful registration a confirmation email MUST be sent to provided address.
+
++ Request (application/json)
+    + Attributes
+        + email: `john.doe@mail.com` (string, required) - E-mail address.
+        + password: `QXR0mi38a2` (string, required) - User password.
+
++ Response 201
+
+## Facebook Authentication [/auth/facebook/login]
+
+### Retrieve a token by Facebook Login [POST] ex
+
+|                         |     |
+|-------------------------|-----|
+| Requires authentication | No  |
+
+Allows to retrieve a valid JSON Web Token for username and password.
+
++ Request (application/json)
+    + Attributes
+        + token: `john.doe@mail.com` (string, required) - User email address
+        + expiresAt: `2016-07-01T15:11:09.553Z` (string, required) - ISO Date/time string. When this resource will expire.
+
++ Response 200 (application/json)
+    + Attributes
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....` (string) - JSON Web Token.
+
+# Group User
+
+## Current user profile [/users/me]
+
+### Retrieve profile of the current user [GET]
+
+|                         |     |
+|-------------------------|-----|
+| Requires authentication | Yes |
+
+Retrieves the profile of the current user.
+
++ Request
+    + Headers
+
+            Authorization: JWT <token>
+
++ Response 200 (application/json)
+    + Attributes (User)
+
+## User password [/users/me/password]
+
+### Change a password of the current user [PUT]
+
+|                         |     |
+|-------------------------|-----|
+| Requires authentication | Yes |
+
+After password is changed all access tokens issued for this user prior to password change must be invalidated.
+
++ Request (application/json)
+    + Headers
+
+            Authorization: JWT <token>
+    + Attributes
+        + old_password: `secret` (string, required)
+        + new_password: `$3C6e7` (string, required)
+
++ Response 200
+    + Attributes
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` (string) - New JSON Web Token.
+
+# Data Structures
+
+## Resource (object)
++ id: `60197d80-b642-4cf3-a4f2-76d82f864900` (string, fixed) - non-sequential url-friendly unique id.
++ createdAt: `2016-07-01T15:11:09.553Z` (string) - ISO Date/time string. When this resource was created.
++ updatedAt: `2016-07-01T15:11:09.553Z` (string) - ISO Date/time string. When this resource was last updated.
+
+## User (Resource)
++ email: `john.doe@mail.com` (string, required) - Login. Unique email address of the user.
++ facebookId: `888047057953991` (number, optional, nullable) - Facebook ID of the user if user account is linked to the Facebook account.
++ name: `John` (string, optional, nullable) - First name of the user.
++ surname: `Doe` (string, optional, nullable) - Last name of the user.
