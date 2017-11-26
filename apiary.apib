@@ -143,7 +143,7 @@ After successful registration a confirmation email MUST be sent to provided addr
 
 + Response 201
 
-## Facebook Authentication [/auth/facebook/login]
+## Facebook Authentication [/auth/login/facebook]
 
 ### Retrieve a token by Facebook Login [POST]
 
@@ -162,7 +162,7 @@ Allows to retrieve a valid JSON Web Token for username and password.
     + Attributes
         + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....` (string) - JSON Web Token.
 
-# Group User
+# Group User Account Actions
 
 ## Current user profile [/users/me]
 
@@ -176,7 +176,6 @@ Retrieves the profile of the current user.
 
 + Request
     + Headers
-
             Authorization: JWT <token>
 
 + Response 200 (application/json)
@@ -194,7 +193,6 @@ After password is changed all access tokens issued for this user prior to passwo
 
 + Request (application/json)
     + Headers
-
             Authorization: JWT <token>
     + Attributes
         + old_password: `secret` (string, required)
@@ -203,6 +201,14 @@ After password is changed all access tokens issued for this user prior to passwo
 + Response 200
     + Attributes
         + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` (string) - New JSON Web Token.
+        
+# Group User Application Actions
+
+## asdasdasd [/user/me/plans]
+
+## asdasdasd [/plan/:id]
+
+## asdadsa [/plan/:id/weeks]
 
 # Data Structures
 
@@ -216,3 +222,31 @@ After password is changed all access tokens issued for this user prior to passwo
 + facebookId: `888047057953991` (number, optional, nullable) - Facebook ID of the user if user account is linked to the Facebook account.
 + name: `John` (string, optional, nullable) - First name of the user.
 + surname: `Doe` (string, optional, nullable) - Last name of the user.
+
+## Plan Endurance (object)
++ method: `running,skipping` (enum[string], required) - type of endurance training
++ total: `2` (number, required) - amount of endurance training per week
++ duration: `2` (number, required) - duration of each endurance training
+
+## Plan Finals (object)
++ total: `2` (number, required) - amount of finals per week
++ iteration: `2` (number, required) - amount of finals per training
+
+## Plan HeartRate (object)
++ low: `60` (number, required) - heart rate at low interaction
++ high: `160` (number, required) - hearth rate at high interaction
+
+## Plan (object)
++ name: `Mein Trainingsplan 1` (string, required) - name of the practice plan
++ startDate: `2017-10-01` (string, required) - start date of the practice plan
++ endurance: `2` (Plan Endurance, required) - endurance settings
++ finals: `2` (Plan Finals, required) - final settings
++ heartrate: `2` (Plan HeartRate, required) - heart rate settings
+
+## ReadiblePlan (Resource)
++ name: `Mein Trainingsplan 1` (string, required) - name of the practice plan
++ startDate: `2017-10-01` (string, required) - start date of the practice plan
++ endDate: `2017-12-01` (string, required) - start date of the practice plan
++ endurance: `2` (Plan Endurance, required) - endurance settings
++ finals: `2` (Plan Finals, required) - final settings
++ heartrate: `2` (Plan HeartRate, required) - heart rate settings
