@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://api.not-yet-known.com
+HOST: https://api.test-dc.christophkluge.com
 
 # Dance Coach
 
@@ -116,18 +116,31 @@ After successful registration a confirmation email MUST be sent to provided addr
 + Request (application/json)
     + Attributes
         + email: `john.doe@mail.com` (string, required) - E-mail address.
-        + password: `QXR0mi38a2` (string, required) - User password.
+        + password: `john-does-password` (string, required) - User password.
         + first_name: `Dance` (string) - Firstname of the user.
         + last_name: `Coach` (string) - Lastname of the user.
 
-+ Response 200
++ Response 200 (application/json)
     + Attributes (Auth Token)
+    
++ Response 422 (application/json)
+    
+        {
+            "message": "422 Unprocessable Entity",
+            "errors": {
+                "last_name": [
+                    "last name darf nicht grösser sein als 2 Zeichen."
+                ],
+                "password": [
+                    "password muss mindestens 6 Zeichen lang sein."
+                ]
+            },
+            "status_code": 422
+        }
 
 ## User Login [/auth/login]
 
-Access tokens are required to access nearly all endpoints of this API.
-
-### Retrieve a token [POST]
+### Retrieve a token by credentials [POST]
 
 Allows to retrieve a valid JSON Web Token for username and password.
 
@@ -138,26 +151,27 @@ Allows to retrieve a valid JSON Web Token for username and password.
 
 + Response 200 (application/json)
     + Attributes (Auth Token)
+    
++ Response 401 (application/json)
+    
+        {
+            "error": "Unauthorized"
+        }
 
 ## Facebook Authentication [/auth/login/facebook]
 
-### Retrieve a token by Facebook Login [POST]
-
-Allows to retrieve a valid JSON Web Token for username and password.
+### Retrieve a token by facebook login [POST]
 
 + Request (application/json)
     + Attributes
-        + token: `facebook-token-is-cool` (string, required) - User email address
-        + expiresAt: `2016-07-01T15:11:09.553Z` (string, required) - ISO Date/time string. When this resource will expire.
+        + code: `facebook-token-is-cool` (string, required) - User email address
 
 + Response 200 (application/json)
     + Attributes (Auth Token)
     
 ## Refresh expired token [/auth/login/refresh]
 
-### Refresh expired Authorization Token [POST]
-
-Allows to send an expired JSON Web Token and retrieve a new valid JSON Web Token.
+### Refresh expired auth token [POST]
 
 + Request (application/json)
 
@@ -167,6 +181,27 @@ Allows to send an expired JSON Web Token and retrieve a new valid JSON Web Token
 
 + Response 200 (application/json)
     + Attributes (Auth Token)
+    
++ Response 401 (application/json)
+
+        {
+            "message": "Failed to authenticate because of bad credentials or an invalid authorization header.",
+            "status_code": 401
+        }
+    
++ Response 401 (application/json)
+
+        {
+            "message": "Token Signature could not be verified.",
+            "status_code": 401
+        }
+        
++ Response 401 (application/json)
+
+        {
+            "message": "The token has been blacklisted",
+            "status_code": 401
+        }
 
 
 # Group User Account Actions
@@ -186,9 +221,9 @@ Retrieves the profile of the current user.
 + Response 200 (application/json)
     + Attributes (User)
 
-## User password [/users/me/password]
+## (work-in-progress) User password [/users/me/password]
 
-### Change a password of the current user [PUT]
+### Change the user password [PUT]
 
 After password is changed all access tokens issued for this user prior to password change must be invalidated.
 
@@ -200,7 +235,7 @@ After password is changed all access tokens issued for this user prior to passwo
             
     + Attributes
         + old_password: `secret` (string, required)
-        + new_password: `$3C6e7` (string, required)
+        + new_password: `new-secret` (string, required)
 
 + Response 200
     + Attributes (Auth Token)
