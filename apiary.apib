@@ -111,8 +111,6 @@ This API returns both, machine-readable error codes and human-readable error mes
 
 ### Register a new user [POST]
 
-After successful registration a confirmation email MUST be sent to provided address.
-
 + Request (application/json)
     + Attributes
         + email: `john.doe@mail.com` (string, required) - E-mail address.
@@ -141,8 +139,6 @@ After successful registration a confirmation email MUST be sent to provided addr
 ## User Login [/auth/login]
 
 ### Retrieve a token by credentials [POST]
-
-Allows to retrieve a valid JSON Web Token for username and password.
 
 + Request (application/json)
     + Attributes
@@ -206,11 +202,9 @@ Allows to retrieve a valid JSON Web Token for username and password.
 
 # Group User Account Actions
 
-## Current user profile [/users/me]
+## User Profile [/users/me]
 
 ### Retrieve profile of the current user [GET]
-
-Retrieves the profile of the current user.
 
 + Request
 
@@ -221,9 +215,9 @@ Retrieves the profile of the current user.
 + Response 200 (application/json)
     + Attributes (User)
 
-## (work-in-progress) User password [/users/me/password]
+## User Profile Password [/users/me/password]
 
-### Change the user password [PUT]
+### Update the user password [PUT]
 
 After password is changed all access tokens issued for this user prior to password change must be invalidated.
 
@@ -254,7 +248,7 @@ After password is changed all access tokens issued for this user prior to passwo
 ## Public Resource (Resource)
 + id: `60197d80-b642-4cf3-a4f2-76d82f864900` (string, fixed) - non-sequential url-friendly unique id.
 
-## User (Resource)
+## User (object)
 + name: `John Doe` (string, required, nullable) - Full name of the user.
 + first_name: `John` (string, required, nullable) - First name of the user.
 + last_name: `Doe` (string, required, nullable) - Last name of the user.
