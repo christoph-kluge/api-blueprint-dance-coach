@@ -154,13 +154,13 @@ This API returns both, machine-readable error codes and human-readable error mes
             "error": "Unauthorized"
         }
 
-## Facebook Authentication [/auth/ologin/facebook]
+## Facebook Authentication [/auth/login/facebook]
 
 ### Retrieve a token by facebook login [POST]
 
 + Request (application/json)
     + Attributes
-        + code: `facebook-token-is-cool` (string, required) - User email address
+        + code: `facebook-token-is-cool` (string, required) - FB token you received from FB login
 
 + Response 200 (application/json)
     + Attributes (Auth Token)
@@ -214,25 +214,6 @@ This API returns both, machine-readable error codes and human-readable error mes
 
 + Response 200 (application/json)
     + Attributes (User)
-
-## User Profile Password [/users/me/password]
-
-### Update the user password [PUT]
-
-After password is changed all access tokens issued for this user prior to password change must be invalidated.
-
-+ Request (application/json)
-
-    + Headers
-    
-            Authorization: Bearer <token>
-            
-    + Attributes
-        + old_password: `secret` (string, required)
-        + new_password: `new-secret` (string, required)
-
-+ Response 200
-    + Attributes (Auth Token)
 
 # Data Structures
 
